@@ -20,3 +20,18 @@ class HandTracker:
                                          min_tracking_confidence=self.min_track_conf)
 
         self.mp_draw = mp.solutions.drawing_utils
+
+    def detect_hands(self, img, visible_landmarks=True):
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        processed_img = self.hands.process(img_rgb)
+
+        if processed_img.multi_hand_landmarks:
+            for landmark in processed_img.multi_hand_landmarks:
+                if visible_landmarks:
+                    self.mp_draw.draw_landmarks(img,
+                                                landmark,
+                                                self.mp_hands.HAND_CONNECTIONS)
+
+        return img
+
+    # def 
