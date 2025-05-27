@@ -46,7 +46,7 @@ class HandTracker:
 
         return img
 
-    def get_landmark_pos(self):
+    def get_pos(self):
         left_pos_list = []
         right_pos_list = []
 
