@@ -1,6 +1,6 @@
 import cv2
 import mediapipe as mp
-import numpy as np
+from math import dist
 
 
 class HandTracker:
@@ -21,6 +21,9 @@ class HandTracker:
                                          min_tracking_confidence=self.min_track_conf)
 
         self.mp_draw = mp.solutions.drawing_utils
+
+        self.left_landmarks = []
+        self.right_landmarks = []
 
     def detect_hands(self, img, visible_landmarks=True):
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -60,3 +63,30 @@ class HandTracker:
 
         pos_dict = {"Left": left_pos_list, "Right": right_pos_list}
         return pos_dict
+
+    def get_extended_fingers(self):
+
+        pos_dict = self.get_pos()
+        left_pos_list = pos_dict["Left"]
+        right_pos_list = pos_dict["Right"]
+
+        left_extend_list = []
+        right_extend_list = []
+
+        tip_indices = [4, 8, 12, 16, 20]
+
+        for i in tip_indices:
+
+            left_extend_list.append(
+                dist(left_pos_list[i], left_pos_list[0]) > dist(left_pos_list[i - 1], left_pos_list[0])
+                and dist(left_pos_list[i], left_pos_list[0]) > dist(left_pos_list[i - 2], left_pos_list[0])
+                and dist(left_pos_list[i], left_pos_list[0]) > dist(left_pos_list[i - 3], left_pos_list[0]))
+
+            right_extend_list.append(
+                dist(right_pos_list[i], right_pos_list[0]) > dist(right_pos_list[i - 1], right_pos_list[0])
+                and dist(right_pos_list[i], right_pos_list[0]) > dist(right_pos_list[i - 2], right_pos_list[0])
+                and dist(right_pos_list[i], right_pos_list[0]) > dist(right_pos_list[i - 3], right_pos_list[0]))
+
+        extened_dict = {"Left": left_extend_list, "Right": right_extend_list}
+
+        return extened_dict
