@@ -79,7 +79,7 @@ class HandTracker:
 
     def get_pos(self):
         """
-        Initializes a HandTracker object.
+        Finds the row, col positions of all landmarks.
 
         Returns:
             (list of tuples): A list tuples representing the row, col position
@@ -106,7 +106,7 @@ class HandTracker:
 
     def get_extended_fingers(self):
         """
-        Initializes a HandTracker object.
+        Checks if fingers are extended.
 
         Returns:
             (list of bools): A list boolean values representing whether or not
