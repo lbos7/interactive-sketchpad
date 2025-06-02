@@ -35,15 +35,25 @@ def create_buttons(starting_pos=(0, 0), button_size=(100, 100)):
 
     return button_list
 
+def slider_mapping(pos, lower_col=930, upper_col=1150, min_size=5, max_size=40):
+    cols = np.linspace(lower_col, upper_col, max_size - min_size + 1)
+    cols = cols.astype(int)
+
+    closest_ind = np.abs(cols - pos[1]).argmin()
+
+    return closest_ind + 5, cols[closest_ind]
+
 
 def main():
 
     hand_tracker = HandTracker()
     buttons = create_buttons()
-    sketchpad = Region((100, 0), (1080 - 100, 1920), (255, 255, 255), transparency=0.0)
+    sketchpad = Region((100, 0), (720 - 100, 1280), (255, 255, 255), transparency=0.0)
+    slider = Region((0, 900), (100, 280), (255, 255, 255), transparency=0.0)
     sketch_img = np.zeros((720, 1280, 3), dtype=np.uint8)
 
     cursor_size = 5
+    slider_x = slider.pos[1] + 30
 
     drawing = False
     current_color_button = buttons[5]
@@ -64,7 +74,7 @@ def main():
             print("Empty camera frame.")
             break
 
-        # Flip the frame horizontally for selfie view
+        # Flip the frame horizontally for mirror view
         frame = cv2.flip(frame, 1)
 
         hand_tracker.detect_hands(frame)
@@ -113,10 +123,14 @@ def main():
                             current_color_button = button
                             if j == 7:
                                 current_color = (0, 0, 0)
-                                cursor_size = 40
+                                # cursor_size = 40
                             else:
                                 current_color = current_color_button.color
-                                cursor_size = 5
+                                # cursor_size = 5
+                    
+                    if slider.contains(pos):
+                        cursor_size, slider_x = slider_mapping(pos)
+
 
                 if exit:
                     break
@@ -136,6 +150,18 @@ def main():
                       (current_color_button.pos[1] + current_color_button.size[1], current_color_button.pos[0] + current_color_button.size[0]),
                       (255, 255, 0),
                       6)
+        
+        slider.draw(frame)
+        cv2.rectangle(frame,
+                      (slider.pos[1] + 30, int(slider.pos[0] + slider.size[0] / 2 - 1)),
+                      (slider.pos[1] + slider.size[1] - 30, int(slider.pos[0] + slider.size[0] / 2 + 1)),
+                      (128, 128, 128),
+                      -1)
+        cv2.circle(frame,
+                   (slider_x, int(slider.pos[0] + slider.size[0] / 2)),
+                   int(cursor_size / 2),
+                   (255, 255, 255),
+                   -1)
 
         sketch_img_gray = cv2.cvtColor(sketch_img, cv2.COLOR_BGR2GRAY)
         _, inv_img = cv2.threshold(sketch_img_gray, 0, 255, cv2.THRESH_BINARY_INV)
