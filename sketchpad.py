@@ -36,6 +36,8 @@ def main():
 
     exit = False
 
+    msg = ""
+
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
@@ -73,6 +75,10 @@ def main():
 
         if drawing:
 
+            text_size = cv2.getTextSize("Drawing", cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
+            text_pos = (int(1280 - text_size[0][0]), int(720 - text_size[0][1]))
+            cv2.putText(frame, "Drawing", text_pos, cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+
             for i in extended_ind:
                 pos = hand_landmark_pos[4 * (i + 1)]
                 if i != 0 and sketchpad.contains(pos) and sketchpad.contains(prev_pos_list[i - 1]) and (prev_pos_list[i - 1] != (0, 0)):
@@ -106,7 +112,7 @@ def main():
 
                 if exit:
                     break
-                
+
                 prev_pos_list[int(i / 4) - 2] = pos
 
                     
@@ -123,7 +129,7 @@ def main():
                       (current_color_button.pos[1], current_color_button.pos[0]),
                       (current_color_button.pos[1] + current_color_button.size[1], current_color_button.pos[0] + current_color_button.size[0]),
                       (255, 255, 0),
-                      4)
+                      6)
 
         sketch_img_gray = cv2.cvtColor(sketch_img, cv2.COLOR_BGR2GRAY)
         _, inv_img = cv2.threshold(sketch_img_gray, 0, 255, cv2.THRESH_BINARY_INV)

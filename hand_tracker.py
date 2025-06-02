@@ -121,7 +121,7 @@ class HandTracker:
                     angle_1_2_3 = np.degrees(np.arccos(np.clip(cos_angle2, -1.0, 1.0)))
 
                     # Check if both angles indicate the thumb is extended
-                    extended = (150 <= angle_2_3_4 <= 180) and (175 <= angle_1_2_3 <= 180)
+                    extended = (155 <= angle_2_3_4 <= 180) and (170 <= angle_1_2_3 <= 180)
                     extend_list.append(extended)
                 else:
                     extend_list.append(
