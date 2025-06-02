@@ -36,8 +36,6 @@ def main():
 
     exit = False
 
-    msg = ""
-
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
@@ -65,13 +63,6 @@ def main():
             prev_thumb_state = True
         else:
             prev_thumb_state = False
-
-        print(extended_fingers)
-        print("Drawing State: " + str(drawing))
-        print("Prev Thumb State: " + str(prev_thumb_state))
-
-
-
 
         if drawing:
 
