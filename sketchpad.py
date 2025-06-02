@@ -23,11 +23,17 @@ def main():
     hand_tracker = HandTracker()
     buttons = create_buttons()
     sketchpad = Region((100, 0), (1080 - 100, 1920), (255, 255, 255), transparency=0.0)
-    sketch_img = np.zeros((1080, 1920, 3), dtype=np.uint8)
+    sketch_img = np.zeros((720, 1280, 3), dtype=np.uint8)
+
+    cursor_size = 5
+
+    drawing = True
+    current_color = (255, 255, 255)
+    prev_pos_list = [(0, 0)] * 5
 
     cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
     while cap.isOpened():
 
@@ -38,7 +44,27 @@ def main():
 
         # Flip the frame horizontally for selfie view
         frame = cv2.flip(frame, 1)
+
         hand_tracker.detect_hands(frame)
+        hand_landmark_pos = hand_tracker.get_pos()
+        extended_fingers = hand_tracker.get_extended_fingers()
+        print(extended_fingers)
+
+        if drawing:
+
+            extened_ind = np.where(np.array(extended_fingers))[0]
+
+            for i in extened_ind:
+                pos = hand_landmark_pos[4 * (i + 1)]
+                if sketchpad.contains(pos) and (prev_pos_list[i] != (0, 0)):
+                    cv2.line(sketch_img,
+                             (prev_pos_list[i][1], prev_pos_list[i][0]),
+                             (pos[1], pos[0]),
+                             current_color,
+                             cursor_size)
+                    prev_pos_list[i] = pos
+                elif sketchpad.contains(pos):
+                    prev_pos_list[i] = pos
 
         for button in buttons:
             button.draw(frame)
@@ -47,6 +73,12 @@ def main():
                           (button.pos[1] + button.size[1], button.pos[0] + button.size[0]),
                           (255, 255, 255),
                           2)
+
+        sketch_img_gray = cv2.cvtColor(sketch_img, cv2.COLOR_BGR2GRAY)
+        _, inv_img = cv2.threshold(sketch_img_gray, 20, 255, cv2.THRESH_BINARY_INV)
+        inv_img = cv2.cvtColor(inv_img, cv2.COLOR_GRAY2BGR)
+        frame = cv2.bitwise_and(frame, inv_img)
+        frame = cv2.bitwise_or(frame, sketch_img)
 
         # Show the image
         cv2.imshow('Interactive Sketchpad', frame)
