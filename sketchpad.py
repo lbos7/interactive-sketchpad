@@ -12,9 +12,10 @@ def create_buttons(starting_pos=(0, 0), button_size=(100, 100)):
                    Region((starting_row, starting_col + 3*button_size[1]), button_size, (0, 255, 255)),
                    Region((starting_row, starting_col + 4*button_size[1]), button_size, (132, 42, 78)),
                    Region((starting_row, starting_col + 5*button_size[1]), button_size, (255, 255, 255)),
-                   Region((starting_row, starting_col + 6*button_size[1]), button_size, (2, 2, 2)),
+                   Region((starting_row, starting_col + 6*button_size[1]), button_size, (1, 1, 1)),
                    Region((starting_row, starting_col + 7*button_size[1]), button_size, (128, 128, 128), text="Eraser"),
-                   Region((starting_row, starting_col + 8*button_size[1]), button_size, (128, 128, 128), text="Clear")]
+                   Region((starting_row, starting_col + 8*button_size[1]), button_size, (128, 128, 128), text="Clear"),
+                   Region((starting_row, 1280 - button_size[1]), button_size, (0, 0, 128), text="Exit")]
     return button_list
 
 
@@ -32,6 +33,8 @@ def main():
     current_color = current_color_button.color
     prev_pos_list = [(0, 0)] * 4
     prev_thumb_state = False
+
+    exit = False
 
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -84,12 +87,26 @@ def main():
                 pos = hand_landmark_pos[i]
 
                 if i == 8:
-                    for j in range(0, 7):
+                    for j in range(0, 10):
                         button = buttons[j]
                         if button.contains(pos) and not button.contains(prev_pos_list[int(i / 4) - 2]):
+                            if j == 8:
+                                sketch_img = np.zeros((720, 1280, 3), dtype=np.uint8)
+                                continue
+                            if j == 9:
+                                exit = True
+                                break
                             current_color_button = button
-                            current_color = current_color_button.color
+                            if j == 7:
+                                current_color = (0, 0, 0)
+                                cursor_size = 40
+                            else:
+                                current_color = current_color_button.color
+                                cursor_size = 5
 
+                if exit:
+                    break
+                
                 prev_pos_list[int(i / 4) - 2] = pos
 
                     
@@ -105,11 +122,11 @@ def main():
         cv2.rectangle(frame,
                       (current_color_button.pos[1], current_color_button.pos[0]),
                       (current_color_button.pos[1] + current_color_button.size[1], current_color_button.pos[0] + current_color_button.size[0]),
-                      (255, 0, 255),
+                      (255, 255, 0),
                       4)
 
         sketch_img_gray = cv2.cvtColor(sketch_img, cv2.COLOR_BGR2GRAY)
-        _, inv_img = cv2.threshold(sketch_img_gray, 1, 255, cv2.THRESH_BINARY_INV)
+        _, inv_img = cv2.threshold(sketch_img_gray, 0, 255, cv2.THRESH_BINARY_INV)
         inv_img = cv2.cvtColor(inv_img, cv2.COLOR_GRAY2BGR)
         frame = cv2.bitwise_and(frame, inv_img)
         frame = cv2.bitwise_or(frame, sketch_img)
@@ -117,7 +134,7 @@ def main():
         # Show the image
         cv2.imshow('Interactive Sketchpad', frame)
 
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1) == ord('q') or exit:
             break
 
     cap.release()
