@@ -34,16 +34,6 @@ class HandTracker:
         self.results = self.hands.process(img_rgb)
 
         if self.results.multi_hand_landmarks:
-            # for i, landmarks in enumerate(self.results.multi_hand_landmarks):
-            #     handedness = self.results.multi_handedness[i].classification[0]
-            #     label = handedness.label
-            #     score = handedness.score
-
-                # if score > self.min_lr_conf:
-                #     if label == "Left":
-                #         self.left_landmarks = landmarks
-                #     elif label == "Right":
-                #         self.right_landmarks = landmarks
             self.landmarks = self.results.multi_hand_landmarks[len(self.results.multi_hand_landmarks) - 1]
             if visible_landmarks:
                 self.mp_draw.draw_landmarks(img,
@@ -53,19 +43,6 @@ class HandTracker:
         return img
 
     def get_pos(self):
-        # left_pos_list = []
-        # right_pos_list = []
-
-        # for landmark in self.left_landmarks:
-        #     row, col = int(landmark.y * self.img_h), int(landmark.x * self.img_w)
-        #     left_pos_list.append((row, col))
-
-        # for landmark in self.right_landmarks:
-        #     row, col = int(landmark.y * self.img_h), int(landmark.x * self.img_w)
-        #     right_pos_list.append((row, col))
-
-        # pos_dict = {"Left": left_pos_list, "Right": right_pos_list}
-        # return pos_dict
         pos_list = []
         if self.landmarks:
             for landmark in self.landmarks.landmark:
@@ -76,34 +53,9 @@ class HandTracker:
 
     def get_extended_fingers(self):
 
-        # pos_dict = self.get_pos()
-        # left_pos_list = pos_dict["Left"]
-        # right_pos_list = pos_dict["Right"]
-
-        # left_extend_list = []
-        # right_extend_list = []
 
         tip_indices = [4, 8, 12, 16, 20]
         extend_list = []
-
-        # if left_pos_list != []:
-
-        #     for i in tip_indices:
-
-        #         left_extend_list.append(
-        #             dist(left_pos_list[i], left_pos_list[0]) > dist(left_pos_list[i - 1], left_pos_list[0])
-        #             and dist(left_pos_list[i], left_pos_list[0]) > dist(left_pos_list[i - 2], left_pos_list[0])
-        #             and dist(left_pos_list[i], left_pos_list[0]) > dist(left_pos_list[i - 3], left_pos_list[0]))
-
-        # if right_pos_list != []:
-
-            # for i in tip_indices:
-            #     right_extend_list.append(
-            #         dist(right_pos_list[i], right_pos_list[0]) > dist(right_pos_list[i - 1], right_pos_list[0])
-            #         and dist(right_pos_list[i], right_pos_list[0]) > dist(right_pos_list[i - 2], right_pos_list[0])
-            #         and dist(right_pos_list[i], right_pos_list[0]) > dist(right_pos_list[i - 3], right_pos_list[0]))
-
-        # extened_dict = {"Left": left_extend_list, "Right": right_extend_list}
 
         if self.pos_list:
             for i in tip_indices:
