@@ -162,6 +162,11 @@ def main():
                    int(cursor_size / 2),
                    (255, 255, 255),
                    -1)
+        
+        slider_text_size = cv2.getTextSize("Cursor Size", cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
+        slider_text_pos = (int(slider.pos[1] + slider.size[1] / 2 - slider_text_size[0][0] / 2),
+                    int(slider.pos[0] + slider_text_size[0][1] + 5))
+        cv2.putText(frame, "Cursor Size", slider_text_pos, cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
 
         sketch_img_gray = cv2.cvtColor(sketch_img, cv2.COLOR_BGR2GRAY)
         _, inv_img = cv2.threshold(sketch_img_gray, 0, 255, cv2.THRESH_BINARY_INV)
