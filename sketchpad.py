@@ -27,9 +27,11 @@ def main():
 
     cursor_size = 5
 
-    drawing = True
-    current_color = (255, 255, 255)
-    prev_pos_list = [(0, 0)] * 5
+    drawing = False
+    current_color_button = buttons[5]
+    current_color = current_color_button.color
+    prev_pos_list = [(0, 0)] * 4
+    prev_thumb_state = False
 
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -48,23 +50,40 @@ def main():
         hand_tracker.detect_hands(frame)
         hand_landmark_pos = hand_tracker.get_pos()
         extended_fingers = hand_tracker.get_extended_fingers()
+        extended_ind = np.where(np.array(extended_fingers))[0]
+
+        # Toggle for turning drawing on/off
+        if 0 in extended_ind and not prev_thumb_state:
+            drawing = not drawing
+            prev_thumb_state = True
+        elif 0 in extended_ind:
+            prev_thumb_state = True
+        else:
+            prev_thumb_state = False
+
         print(extended_fingers)
+        print("Drawing State: " + str(drawing))
+        print("Prev Thumb State: " + str(prev_thumb_state))
+
+
+
 
         if drawing:
 
-            extened_ind = np.where(np.array(extended_fingers))[0]
-
-            for i in extened_ind:
+            for i in extended_ind:
                 pos = hand_landmark_pos[4 * (i + 1)]
-                if sketchpad.contains(pos) and (prev_pos_list[i] != (0, 0)):
+                if i != 0 and sketchpad.contains(pos) and (prev_pos_list[i - 1] != (0, 0)):
                     cv2.line(sketch_img,
-                             (prev_pos_list[i][1], prev_pos_list[i][0]),
+                             (prev_pos_list[i - 1][1], prev_pos_list[i - 1][0]),
                              (pos[1], pos[0]),
                              current_color,
                              cursor_size)
-                    prev_pos_list[i] = pos
-                elif sketchpad.contains(pos):
-                    prev_pos_list[i] = pos
+
+        if hand_landmark_pos:
+            for i in range(8, 20 + 1, 4):
+                pos = hand_landmark_pos[i]
+                if sketchpad.contains(pos):
+                    prev_pos_list[int(i / 4) - 2] = pos
 
         for button in buttons:
             button.draw(frame)
@@ -73,6 +92,12 @@ def main():
                           (button.pos[1] + button.size[1], button.pos[0] + button.size[0]),
                           (255, 255, 255),
                           2)
+            
+        cv2.rectangle(frame,
+                      (current_color_button.pos[1], current_color_button.pos[0]),
+                      (current_color_button.pos[1] + current_color_button.size[1], current_color_button.pos[0] + current_color_button.size[0]),
+                      (255, 0, 255),
+                      4)
 
         sketch_img_gray = cv2.cvtColor(sketch_img, cv2.COLOR_BGR2GRAY)
         _, inv_img = cv2.threshold(sketch_img_gray, 20, 255, cv2.THRESH_BINARY_INV)
