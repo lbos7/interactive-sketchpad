@@ -3,9 +3,25 @@ import numpy as np
 from hand_tracker import HandTracker
 from region import Region
 
+
 def create_buttons(starting_pos=(0, 0), button_size=(100, 100)):
+    """
+    Creates a list of region objects representing buttons.
+
+    Parameters:
+        starting_pos (tuple of ints): The row, col position of the first
+                                      button's top left pixel.
+        button_size (tuple of ints): The button sizes in # of rows, # of cols.
+
+    Returns:
+        (list of regions): List of sketchpad buttons.
+    """
+
+    # Indexing starting_pos arg
     starting_row = starting_pos[0]
     starting_col = starting_pos[1]
+
+    # Creating buttons
     button_list = [Region(starting_pos, button_size, (0, 0, 255)),
                    Region((starting_row, starting_col + 1*button_size[1]), button_size, (255, 0, 0)),
                    Region((starting_row, starting_col + 2*button_size[1]), button_size, (0, 255, 0)),
@@ -16,6 +32,7 @@ def create_buttons(starting_pos=(0, 0), button_size=(100, 100)):
                    Region((starting_row, starting_col + 7*button_size[1]), button_size, (128, 128, 128), text="Eraser"),
                    Region((starting_row, starting_col + 8*button_size[1]), button_size, (128, 128, 128), text="Clear"),
                    Region((starting_row, 1280 - button_size[1]), button_size, (0, 0, 128), text="Exit")]
+
     return button_list
 
 
@@ -106,8 +123,6 @@ def main():
 
                 prev_pos_list[int(i / 4) - 2] = pos
 
-                    
-
         for button in buttons:
             button.draw(frame)
             cv2.rectangle(frame,
@@ -115,7 +130,7 @@ def main():
                           (button.pos[1] + button.size[1], button.pos[0] + button.size[0]),
                           (255, 255, 255),
                           2)
-            
+  
         cv2.rectangle(frame,
                       (current_color_button.pos[1], current_color_button.pos[0]),
                       (current_color_button.pos[1] + current_color_button.size[1], current_color_button.pos[0] + current_color_button.size[0]),

@@ -75,7 +75,7 @@ class Region:
         Parameters:
             point (tuple of ints): The point of interest to check.
 
-        Return:
+        Returns:
             (bool): Whether or not the point is in the region
         """
         return (self.pos[0] <= point[0] <= self.pos[0] + self.size[0] and
