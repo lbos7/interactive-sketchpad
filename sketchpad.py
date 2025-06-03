@@ -36,7 +36,7 @@ def create_buttons(starting_pos=(0, 0), button_size=(100, 100)):
     return button_list
 
 
-def slider_map(pos, lower_col=930, upper_col=1150, min_size=5, max_size=40):
+def slider_map(pos, lower_col=960, upper_col=1120, min_size=5, max_size=40):
     """
     Adjusts cursor size and slider position based on fingertip position.
 
@@ -82,10 +82,10 @@ def main():
 
     # Initial cursor size and slider position
     cursor_size = 5
-    slider_x = slider.pos[1] + 30
+    slider_x = slider.pos[1] + 60
 
     # Initial conditions for toggle, color, previous landmark positions, thumb state, and exiting
-    drawing = False
+    cursor_on = False
     current_color_button = buttons[5]
     current_color = current_color_button.color
     prev_pos_list = [(0, 0)] * 4
@@ -115,11 +115,11 @@ def main():
         extended_fingers = hand_tracker.get_extended_fingers()
         extended_ind = np.where(np.array(extended_fingers))[0]
 
-        # Toggle for turning drawing on/off using thumb
+        # Toggle for turning cursor on/off using thumb
         if 0 in extended_ind and not prev_thumb_state:
 
-            # Change drawing state and update previous thumb state
-            drawing = not drawing
+            # Change cursor state and update previous thumb state
+            cursor_on = not cursor_on
             prev_thumb_state = True
 
         elif 0 in extended_ind:
@@ -132,13 +132,13 @@ def main():
             # Update previous thumb state
             prev_thumb_state = False
 
-        # Case if drawing functionality is activated
-        if drawing:
+        # Case if cursor is on
+        if cursor_on:
 
-            # Add text to frame if drawing functionality is turned on
-            text_size = cv2.getTextSize("Drawing", cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
+            # Add text to frame if cursor is on
+            text_size = cv2.getTextSize("Cursor On", cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
             text_pos = (int(1280 - text_size[0][0]), int(720 - text_size[0][1]))
-            cv2.putText(frame, "Drawing", text_pos, cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+            cv2.putText(frame, "Cursor On", text_pos, cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
             # Loop through extended fingers and draw
             for i in extended_ind:
@@ -230,8 +230,8 @@ def main():
 
         # Draw slider bar
         cv2.rectangle(frame,
-                      (slider.pos[1] + 30, int(slider.pos[0] + slider.size[0] / 2 - 1)),
-                      (slider.pos[1] + slider.size[1] - 30, int(slider.pos[0] + slider.size[0] / 2 + 1)),
+                      (slider.pos[1] + 60, int(slider.pos[0] + slider.size[0] / 2 - 1)),
+                      (slider.pos[1] + slider.size[1] - 60, int(slider.pos[0] + slider.size[0] / 2 + 1)),
                       (128, 128, 128),
                       -1)
 
