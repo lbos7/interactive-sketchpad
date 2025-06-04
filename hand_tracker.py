@@ -126,20 +126,29 @@ class HandTracker:
                 # Case for thumb
                 if i == 4:
 
-                    # Calculate angle at joint 2-3-4
+                    # Calculate angles at joints
                     a1 = np.array(self.pos_list[4]) - np.array(self.pos_list[3])
                     b1 = np.array(self.pos_list[2]) - np.array(self.pos_list[3])
                     cos_angle1 = np.dot(a1, b1) / (np.linalg.norm(a1) * np.linalg.norm(b1) + 1e-6)
                     angle_2_3_4 = np.degrees(np.arccos(np.clip(cos_angle1, -1.0, 1.0)))
-
-                    # Calculate angle at joint 1-2-3
                     a2 = np.array(self.pos_list[3]) - np.array(self.pos_list[2])
                     b2 = np.array(self.pos_list[1]) - np.array(self.pos_list[2])
                     cos_angle2 = np.dot(a2, b2) / (np.linalg.norm(a2) * np.linalg.norm(b2) + 1e-6)
                     angle_1_2_3 = np.degrees(np.arccos(np.clip(cos_angle2, -1.0, 1.0)))
 
-                    # Check if both angles indicate the thumb is extended
-                    extend_list.append((155 <= angle_2_3_4 <= 180) and (170 <= angle_1_2_3 <= 180))
+                    # Calculate normalized distance to landmark 17
+                    thumb_tip_dist = dist(self.pos_list[4], self.pos_list[17])
+                    hand_base_dist = dist(self.pos_list[0], self.pos_list[5])
+
+                    # Check if thumb is extended
+                    thumb_extended = (
+                        150 <= angle_2_3_4 <= 195 and
+                        150 <= angle_1_2_3 <= 195 and
+                        thumb_tip_dist > 1.2 * hand_base_dist
+                    )
+
+                    # Add bool to list
+                    extend_list.append(thumb_extended)
 
                 # Case for all other fingers
                 else:
