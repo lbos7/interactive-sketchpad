@@ -48,4 +48,4 @@ The Interactive Sketchpad is an application that allows a user to draw on a virt
 3. **Use your finger to hit the 'Exit' button on-screen or press 'q' on the keyboard to quit the application.**
 
 ## Demo
-<center><iframe width="800" height="500" src="https://www.youtube.com/embed/eManR3R7KWY" title="Interactive Sketchpad Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></center>
+[![Watch the demo video](https://img.youtube.com/vi/eManR3R7KWY/0.jpg)](https://youtu.be/eManR3R7KWY)
