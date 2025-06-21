@@ -36,7 +36,7 @@ The Interactive Sketchpad is an application that allows a user to draw on a virt
 
 1. **Run the sketchpad.py script:**
     ```sh
-    python sketchpad.py
+    python3 sketchpad.py
     ```
 
 2. **Interact with the virtual canvas:**
