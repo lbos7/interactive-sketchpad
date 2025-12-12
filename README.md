@@ -1,5 +1,8 @@
 # Interactive Sketchpad
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2bab890f-e6e4-4a5f-a50f-63916438a6fd" width="500"/>
+</p>
 The Interactive Sketchpad is an application that allows a user to draw on a virtual canvas using their hand.
 
 ## Features
@@ -46,7 +49,3 @@ The Interactive Sketchpad is an application that allows a user to draw on a virt
     - Use your index fingertip to change colors, press buttons, or adjust sliders
 
 3. **Use your finger to hit the 'Exit' button on-screen or press 'q' on the keyboard to quit the application.**
-
-## Demo
-[Watch a demo](https://www.youtube.com/watch?v=eManR3R7KWY)
-
